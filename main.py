@@ -106,7 +106,7 @@ def custom_loss(y_true, y_pred):
     # [[ 1.  0.]]
     # [[ 0.  1.]]
     # [[ 1.  1.]]]
-    grid = np.array([ [[float(x),float(y)]]*nb_boxes   for y in range(grid_h) for x in range(grid_w)])
+    grid = [[[tf.cast(x, tf.float32), tf.cast(y, tf.float32)]] * nb_boxes for y in range(grid_h) for x in range(grid_w)]
 
     # first three values are classes : cat, rat, and none.
     # However yolo doesn't predict none as a class, none is everything else and is just not predicted
@@ -120,7 +120,7 @@ def custom_loss(y_true, y_pred):
     
     # sum coordinates of center of boxes with cell offsets.
     # as pred boxes are limited to 0 to 1 range, pred x,y + offset is limited to predicting elements inside a cell
-    y_pred_xy   = pred_boxes[...,0:2] + K.variable(grid)
+    y_pred_xy   = pred_boxes[...,0:2] + grid
     # w and h predicted are 0 to 1 with 1 being image size
     y_pred_wh   = pred_boxes[...,2:4]
     # probability that there is something to predict here

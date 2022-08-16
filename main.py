@@ -1,21 +1,22 @@
 from __future__ import print_function
-import keras
+import tensorflow.keras
 import tensorflow as tf
-from keras.datasets import mnist
-from keras.models import Sequential, Model
-from keras.layers import Dense, Dropout, Flatten, Input, Reshape
-from keras.layers import Conv2D, MaxPooling2D
+from tensorflow.keras.datasets import mnist
+from tensorflow.keras.models import Sequential
+from tensorflow.keras import Model
+from tensorflow.keras.layers import Dense, Dropout, Flatten, Input, Reshape
+from tensorflow.keras.layers import Conv2D, MaxPooling2D
 
-from keras.layers.advanced_activations import LeakyReLU, PReLU
+from tensorflow.keras.layers import LeakyReLU, PReLU
 
-from keras import backend as K
-from keras.models import load_model
+from tensorflow.keras import backend as K
+from tensorflow.keras.models import load_model
 import numpy as np
 import sys
 import cv2
 import argparse
 
-from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img
+from tensorflow.keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img
 
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
@@ -61,7 +62,7 @@ def load_image(j):
 # Load all images and append to vector
 # 
 #for j in range(0, 10):
-for j in range(10, 5000):
+for j in range(0, 100):
     [x,y] = load_image(j)
     x_train.append(x)
     y_train.append(y)
@@ -78,11 +79,11 @@ i = Input(shape=(img_h,img_w,3))
 
 x = Conv2D(16, (1, 1))(i)
 x = Conv2D(32, (3, 3))(x)
-x = keras.layers.LeakyReLU(alpha=0.3)(x)
+x = tensorflow.keras.layers.LeakyReLU(alpha=0.3)(x)
 x = MaxPooling2D(pool_size=(2, 2))(x)
 x = Conv2D(16, (3, 3))(x)
 x = Conv2D(32, (3, 3))(x)
-x = keras.layers.LeakyReLU(alpha=0.3)(x)
+x = tensorflow.keras.layers.LeakyReLU(alpha=0.3)(x)
 x = MaxPooling2D(pool_size=(2, 2))(x)
 #x = Dropout(0.25)(x)
 
@@ -96,7 +97,7 @@ model = Model(i, x)
 #
 # The loss function orient the backpropagation algorithm toward the best direction.
 #It does so by outputting a number. The larger the number, the further we are from a correct solution.
-#Keras also accept that we output a tensor. In that case it will just sum all the numbers to get a single number.
+#tensorflow.keras also accept that we output a tensor. In that case it will just sum all the numbers to get a single number.
 # 
 # y_true is training data
 # y_pred is value predicted by the network
@@ -164,24 +165,19 @@ def custom_loss(y_true, y_pred):
 
 model = Model(i, x)
 
-adam = keras.optimizers.Adam(lr=0.001, beta_1=0.9, beta_2=0.999, decay=0.01)
+adam = tensorflow.keras.optimizers.Adam(lr=0.001, beta_1=0.9, beta_2=0.999, decay=0.01)
 model.compile(loss=custom_loss, optimizer=adam) # better
 
 print(model.summary())
 
 #
 # Training the network
-#
-parser = argparse.ArgumentParser(description='Process some integers.')
-parser.add_argument('--train', help='train', action='store_true')
-parser.add_argument('--epoch', help='epoch', const='int', nargs='?', default=1)
-args = parser.parse_args()
+epoch = 100
 
-if args.train:
-    model.fit(x_train, y_train, batch_size=64, epochs=int(args.epoch))
-    model.save_weights('weights_006.h5')
-else:
-    model.load_weights('weights_006.h5')
+
+model.fit(x_train, y_train, batch_size=16, epochs=int(epoch))
+model.save_weights('weights_006.h5')
+
 
 axes=[0 for _ in range(100)]
 fig, axes = plt.subplots(5,5)
@@ -232,9 +228,3 @@ for j in range(0,25):
                 i+=1
 
 plt.show()
-
-
-
-
-
-
